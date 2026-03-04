@@ -97,6 +97,7 @@
 - [x] vitals HUD enlarged and moved to bottom-left
 - [x] vision system: 암시야 postFX + FOV 밝힘 메쉬 + 적 FOV/LOS 기반 가시성 제어
 - [x] movement stability pass: player drift 완화 + enemy wall collision/막힘 recovery + LOS 판정 정밀화
+- [x] root `README.md` 작성(실행/조작/시스템/튜닝 가이드)
 
 ## wip
 - playmode_tuning: camera distance/avoid feel, obstacle density, spawn combat rhythm
