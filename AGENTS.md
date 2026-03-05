@@ -1,7 +1,7 @@
 # AGENTS.md — Duckov-like Top-Down Shooter + Rune Drawing Magic (Prototype)
 
 ## Project One-liner
-Top-down WASD shooter where holding Space locks the view/aim context and lets the player draw a one-stroke rune with the mouse; releasing Space recognizes the rune and casts a spell.
+Top-down WASD shooter where LMB Down/Drag/Up drives magic-circle input, recognizes one-stroke runes, and casts spells.
 
 ## Target & Scope
 - Platform: PC
@@ -16,13 +16,14 @@ Player moves while quickly drawing runes to chain/cycle spells; casting feedback
 ## Controls (must match)
 - WASD: move
 - Mouse: aim (cursor-based)
-- Space (hold): enter Rune Draw Mode (capture stroke + show line)
-- Space (release): recognize rune -> cast spell immediately
+- LMB Down: acquire AimLock (Enemy under cursor first, else Ground point)
+- LMB Drag: draw magic-circle stroke
+- LMB Up: classify rune -> cast spell immediately
 
 ## “Done” Criteria for the Prototype (must all work)
 1) Scene `Prototype_Arena` runs with a controllable player (WASD + mouse aim)
-2) Space-hold enters Rune Draw Mode, captures mouse stroke points, renders stroke line
-3) On Space release, rune is recognized from 5–8 templates (start with 3)
+2) LMB drag enters Rune Draw Mode, captures mouse stroke points, renders stroke line
+3) On LMB release, rune is recognized from 5–8 templates (start with 3)
 4) A spell is cast based on rune result with obvious feedback (projectile/AoE/etc.)
 5) Enemies spawn, chase/attack, can be damaged and killed
 6) Player has HP, can die, and restart loop is functional (quick reset)
@@ -75,6 +76,8 @@ General:
 - Fail gracefully:
   - If stroke is too short, treat as "Line" or default basic spell (no hard fail)
   - Recognition should default to best match (prototype should not block casting)
+- Legacy note:
+  - Space 기반 룬 드로잉/캐스팅 입력은 제거됨
 
 ## Immediate Roadmap (P0 order)
 1) Player movement + aim

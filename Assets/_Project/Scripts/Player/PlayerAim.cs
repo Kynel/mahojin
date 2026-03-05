@@ -1,3 +1,4 @@
+using DuckovProto.Combat;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,6 +11,7 @@ namespace DuckovProto.Player
         [SerializeField] private Transform rotateTarget;
         [SerializeField] private Transform aimPivot;
         [SerializeField] private LineRenderer aimLine;
+        [SerializeField] private AimLockController aimLockController;
 
         [Header("Aim Settings")]
         [SerializeField] private float lineYOffset = 0.1f;
@@ -60,6 +62,11 @@ namespace DuckovProto.Player
                 rotateTarget = transform;
             }
 
+            if (aimLockController == null)
+            {
+                aimLockController = GetComponent<AimLockController>();
+            }
+
             EnsureAimLine();
         }
 
@@ -68,6 +75,16 @@ namespace DuckovProto.Player
             if (rotateTarget == null)
             {
                 SetAimLineActive(false);
+                return;
+            }
+
+            if (aimLockController == null)
+            {
+                aimLockController = GetComponent<AimLockController>();
+            }
+
+            if (TryApplyLockedAim())
+            {
                 return;
             }
 
@@ -121,6 +138,47 @@ namespace DuckovProto.Player
             }
 
             UpdateAimLine(start, end);
+        }
+
+        private bool TryApplyLockedAim()
+        {
+            if (aimLockController == null || !aimLockController.HasLock)
+            {
+                return false;
+            }
+
+            Vector3 lockedPoint = aimLockController.GetLockedAimPointWorld();
+            Vector3 start = rotateTarget.position + new Vector3(0f, lineYOffset, 0f);
+            Vector3 end = lockedPoint;
+            Vector3 aimVector = end - start;
+            float aimLength = aimVector.magnitude;
+
+            if (aimLength > 0.0001f)
+            {
+                Vector3 normalized = aimVector / aimLength;
+                hasAim = true;
+                lastAimStartWorld = start;
+                lastAimEndWorld = end;
+                lastAimDir = normalized;
+                lastAimLen = aimLength;
+            }
+
+            Vector3 flatDirection = lockedPoint - rotateTarget.position;
+            flatDirection.y = 0f;
+            if (flatDirection.sqrMagnitude >= minLookDistance * minLookDistance)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(flatDirection.normalized, Vector3.up);
+                Vector3 yawOnly = lookRotation.eulerAngles;
+                rotateTarget.rotation = Quaternion.Euler(0f, yawOnly.y, 0f);
+
+                if (aimPivot != null)
+                {
+                    aimPivot.rotation = rotateTarget.rotation;
+                }
+            }
+
+            UpdateAimLine(start, end);
+            return true;
         }
 
         private bool TryGetGroundPoint(Ray ray, out Vector3 hitPoint)

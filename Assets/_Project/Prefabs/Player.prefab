@@ -15,13 +15,12 @@ GameObject:
   - component: {fileID: 775001}
   - component: {fileID: 775002}
   - component: {fileID: 775003}
-  - component: {fileID: 775004}
-  - component: {fileID: 775005}
+  - component: {fileID: 775018}
+  - component: {fileID: 775020}
+  - component: {fileID: 775019}
+  - component: {fileID: 775021}
+  - component: {fileID: 775022}
   - component: {fileID: 775006}
-  - component: {fileID: 775007}
-  - component: {fileID: 775008}
-  - component: {fileID: 775009}
-  - component: {fileID: 775010}
   - component: {fileID: 775011}
   - component: {fileID: 775012}
   - component: {fileID: 775013}
@@ -208,6 +207,7 @@ MonoBehaviour:
   rotateTarget: {fileID: 658882836207724101}
   aimPivot: {fileID: 3449763728506813193}
   aimLine: {fileID: 0}
+  aimLockController: {fileID: 775018}
   lineYOffset: 0.1
   minLookDistance: 0.05
   lineWidth: 0.03
@@ -218,7 +218,7 @@ MonoBehaviour:
   useColliderRaycast: 1
   fallbackPlaneHeight: 0
   rayDistance: 500
---- !u!114 &775004
+--- !u!114 &775018
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -227,21 +227,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 1446618755483896204}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b5306811e5e4b03836ae9d118b7bf32, type: 3}
+  m_Script: {fileID: 11500000, guid: 9640b5c03d9d48d3bf3ecc4ea4f30b67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 256
   groundMask:
     serializedVersion: 2
     m_Bits: 128
-  minPointDistance: 0.1
-  maxPoints: 256
-  minStrokePoints: 6
-  strokeLineYOffset: 0.05
-  strokeHideDelay: 0.35
-  strokeLine: {fileID: 0}
-  playerAim: {fileID: 775003}
-  aimCamera: {fileID: 0}
---- !u!114 &775005
+  lockDuration: 3
+  aimPointHeightOffset: 0.6
+  lockIgnoresLOS: 1
+--- !u!114 &775020
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -250,30 +248,96 @@ MonoBehaviour:
   m_GameObject: {fileID: 1446618755483896204}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a60a50b0819647238bdfd5ed5deeaa30, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f1270d0cfa947c5abbbad2163283e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 0}
-  speed: 22
-  lifetime: 2.5
-  spawnForwardOffset: 0.8
-  spawnUpOffset: 0.2
-  projectileLayer: 9
-  damage: 5
-  damageMask:
+  targetCanvas: {fileID: 0}
+  defaultRadiusPx: 140
+  borderThickness: 4
+  userLineThickness: 6
+  gridThickness: 2.2
+--- !u!114 &775019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446618755483896204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76e4600938424370b8f0a7a7ff4a4be5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aimLockController: {fileID: 775018}
+  magicCircleUI: {fileID: 775020}
+  aimCamera: {fileID: 0}
+  rightClickStartsCasting: 1
+  allowLeftDragToDraw: 1
+  maxDrawTime: 3
+  uiRadiusPx: 140
+  minPointDistancePx: 3
+  minPoints: 16
+  clearAimLockOnSubmit: 0
+  clearAimLockOnCancelOrFail: 1
+--- !u!114 &775021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446618755483896204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4db70de3164f4ca5b4992b72b55c6209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyMask:
     serializedVersion: 2
     m_Bits: 256
-  maxRange: 18
-  speedRampTime: 0.12
-  wobbleAmp: 0.18
-  wobbleFreq: 2.9
-  wobbleNoise: 0.35
-  pulseScale: 0.1
-  obstacleMask:
+  wallMask:
     serializedVersion: 2
     m_Bits: 1024
-  wallHitBehavior: 0
-  enableVfx: 1
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 128
+  logStateToConsole: 0
+--- !u!114 &775022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446618755483896204}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f8f00b6b338469ab145318f93f6f6d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  magicCircleDrawController: {fileID: 775019}
+  runeCastController: {fileID: 775006}
+  spellRunner: {fileID: 775021}
+  aimLockController: {fileID: 775018}
+  caster: {fileID: 658882836207724101}
+  runeLibrary: {fileID: 11400000, guid: 0c05bc71657d4665b9baac9990201b35, type: 2}
+  spellLibrary: {fileID: 11400000, guid: ee710c11139346cf85d630c5f70c58cf, type: 2}
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 256
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 128
+  useLightningTemplateRecognizer: 1
+  lightningTemplatePassScore: 0.64
+  minimumAcceptScore: 0.35
+  scoreCacheLifetime: 8
+  resolvedMessageDuration: 0.35
+  unclearMessageDuration: 0.45
+  allowLowScoreFallback: 0
+  lowScoreFallbackMin: 0.45
+  logResolveDetails: 1
 --- !u!114 &775006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,135 +350,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e939886cf7c149deb854acaf2f9680dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  runeDrawController: {fileID: 775004}
-  playerAim: {fileID: 775003}
-  fireboltSpell: {fileID: 775005}
-  iceLanceSpell: {fileID: 775007}
-  blinkSpell: {fileID: 775008}
-  novaSpell: {fileID: 775009}
-  chainLightningSpell: {fileID: 775010}
+  spellRunner: {fileID: 775021}
   caster: {fileID: 658882836207724101}
-  enableFeedback: 1
   mana: {fileID: 775013}
+  aimLockController: {fileID: 775018}
   globalCooldown: 0.2
-  fireboltCooldown: 0.35
-  iceLanceCooldown: 0.25
-  blinkCooldown: 1
-  novaCooldown: 0.8
-  chainCooldown: 1.4
-  fireboltManaCost: 14
-  iceLanceManaCost: 8
-  blinkManaCost: 22
-  novaManaCost: 30
-  chainManaCost: 26
-  insufficientManaMessageDuration: 0.5
---- !u!114 &775007
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446618755483896204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69d5b6d37540467698102e6bb7cc18cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 0}
-  speed: 30
-  lifetime: 2
-  spawnForwardOffset: 0.8
-  spawnUpOffset: 0.2
-  projectileLayer: 9
-  damage: 3
-  damageMask:
-    serializedVersion: 2
-    m_Bits: 256
-  maxRange: 26
-  speedRampTime: 0.05
-  wobbleAmp: 0.03
-  wobbleFreq: 8
-  wobbleNoise: 0.2
-  pulseScale: 0.04
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 1024
-  wallHitBehavior: 0
-  enableVfx: 1
---- !u!114 &775008
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446618755483896204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 741a2f3f6b704f36855e13b0c2af7a84, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  blinkDistance: 5
-  groundRayStartHeight: 8
-  groundRayDistance: 20
-  groundOffset: 0
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 128
-  enableVfx: 1
---- !u!114 &775009
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446618755483896204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d695d6353f4d40649261d923e001c5cc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  radius: 3
-  damage: 4
-  enemyMask:
-    serializedVersion: 2
-    m_Bits: 256
-  visualDuration: 0.2
-  enableVfx: 1
---- !u!114 &775010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446618755483896204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34de1060595d4679ac506765fcb4237c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 25
-  lifetime: 1.5
-  spawnForwardOffset: 0.8
-  spawnUpOffset: 0.2
-  projectileLayer: 9
-  maxRange: 22
-  speedRampTime: 0.08
-  wobbleAmp: 0.12
-  wobbleFreq: 8
-  wobbleNoise: 0.35
-  pulseScale: 0.06
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 1024
-  wallHitBehavior: 0
-  enemyMask:
-    serializedVersion: 2
-    m_Bits: 256
-  chainRadius: 10
-  chainCount: 3
-  chainDamage: 2
-  chainDelay: 0.05
-  enableVfx: 1
+  statusMessageDuration: 0.5
+  logCastState: 0
 --- !u!114 &775011
 MonoBehaviour:
   m_ObjectHideFlags: 0
