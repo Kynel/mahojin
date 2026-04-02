@@ -28,6 +28,8 @@ namespace DuckovProto.Spells
         [SerializeField] private float chainDelay = 0.05f;
         [SerializeField] private bool enableVfx = true;
 
+        private static readonly Collider[] OverlapBuffer = new Collider[64];
+
         public void Cast(Transform caster, Vector3 direction)
         {
             if (caster == null)
@@ -140,13 +142,13 @@ namespace DuckovProto.Spells
 
         private Health FindNearestTarget(Vector3 center, HashSet<Health> excluded)
         {
-            Collider[] colliders = Physics.OverlapSphere(center, chainRadius, enemyMask);
+            int count = Physics.OverlapSphereNonAlloc(center, chainRadius, OverlapBuffer, enemyMask);
             float bestSqr = float.MaxValue;
             Health best = null;
 
-            for (int i = 0; i < colliders.Length; i++)
+            for (int i = 0; i < count; i++)
             {
-                Health health = colliders[i].GetComponentInParent<Health>();
+                Health health = OverlapBuffer[i].GetComponentInParent<Health>();
                 if (health == null || excluded.Contains(health))
                 {
                     continue;
