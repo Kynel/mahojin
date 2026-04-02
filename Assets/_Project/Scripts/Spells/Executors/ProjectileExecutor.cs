@@ -181,7 +181,7 @@ namespace DuckovProto.Spells.Executors
                 return false;
             }
 
-            Health health = hitCollider.GetComponentInParent<Health>();
+            Health health = HealthCache.GetHealth(hitCollider);
             if (health == null || health.IsDead)
             {
                 return false;

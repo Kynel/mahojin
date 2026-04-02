@@ -143,7 +143,7 @@ namespace DuckovProto.Spells.Executors
                         continue;
                     }
 
-                    Health health = col.GetComponentInParent<Health>();
+                    Health health = HealthCache.GetHealth(col);
                     if (health == null || health.IsDead || tickDamagedHealth.Contains(health))
                     {
                         continue;
