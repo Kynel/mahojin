@@ -29,6 +29,10 @@ namespace DuckovProto.Runes
         [SerializeField] private bool rightClickStartsCasting = true;
         [SerializeField] private bool allowLeftDragToDraw = true;
 
+        [Header("World Space Extension")]
+        [SerializeField] private WorldSpaceMagicCircle worldSpaceMagicCircle;
+        [SerializeField] private Transform playerTransform;
+
         [Header("Draw Rules")]
         [SerializeField] private float maxDrawTime = 3f;
         [SerializeField] private float uiRadiusPx = 140f;
@@ -36,6 +40,8 @@ namespace DuckovProto.Runes
         [SerializeField] private int minPoints = 16;
         [SerializeField] private bool clearAimLockOnSubmit;
         [SerializeField] private bool clearAimLockOnCancelOrFail = true;
+
+        private RuneCastPipelineController runeCastPipelineController;
 
         private readonly List<Vector2> localStrokePoints = new List<Vector2>(256);
         private readonly List<Vector2> normalizedStrokePoints = new List<Vector2>(256);
@@ -66,6 +72,18 @@ namespace DuckovProto.Runes
             if (aimCamera == null)
             {
                 aimCamera = Camera.main;
+            }
+
+            runeCastPipelineController = GetComponent<RuneCastPipelineController>();
+
+            if (worldSpaceMagicCircle == null)
+            {
+                var circleObj = new GameObject("WorldSpaceMagicCircle");
+                worldSpaceMagicCircle = circleObj.AddComponent<WorldSpaceMagicCircle>();
+            }
+            if (playerTransform == null)
+            {
+                playerTransform = transform;
             }
         }
 
@@ -151,6 +169,11 @@ namespace DuckovProto.Runes
                 aimLockController.BeginLockFromCursor(aimCamera, castStartScreenPos);
             }
 
+            if (worldSpaceMagicCircle != null)
+            {
+                worldSpaceMagicCircle.Show();
+            }
+
             drawStartTime = Time.unscaledTime;
             state = DrawState.CastingModeActive;
         }
@@ -181,7 +204,51 @@ namespace DuckovProto.Runes
 
             localStrokePoints.Add(localPoint);
             hasAnyStroke = true;
-            magicCircleUI.UpdateUserLine(localStrokePoints);
+            UpdateVisualFeedback(radius);
+        }
+
+        private void UpdateVisualFeedback(float radius)
+        {
+            Color strokeColor = new Color(1f, 0.15f, 0.15f, 0.98f); // Default Red
+
+            normalizedStrokePoints.Clear();
+            for (int i = 0; i < localStrokePoints.Count; i++)
+            {
+                Vector2 p = localStrokePoints[i] / radius;
+                p.x = Mathf.Clamp(p.x, -1f, 1f);
+                p.y = Mathf.Clamp(p.y, -1f, 1f);
+                normalizedStrokePoints.Add(p);
+            }
+
+            if (runeCastPipelineController != null && localStrokePoints.Count >= Mathf.Max(2, minPoints / 2))
+            {
+                var liveScoreInfo = runeCastPipelineController.EvaluateStrokeLive(normalizedStrokePoints);
+
+                if (liveScoreInfo.bestRune != null)
+                {
+                    float passScore = runeCastPipelineController.GetConfiguredPassScore(liveScoreInfo.bestRune);
+                    float normalizedScore = Mathf.Clamp01(liveScoreInfo.bestScore / passScore);
+
+                    // Determine base color based on spell type
+                    Color targetColor;
+                    string linkedSpell = liveScoreInfo.bestRune.LinkedSpellId?.ToLowerInvariant() ?? "";
+
+                    if (linkedSpell.Contains("water")) targetColor = new Color(0.15f, 0.45f, 1f, 0.98f); // Blue
+                    else if (linkedSpell.Contains("fire")) targetColor = new Color(1f, 0.35f, 0.15f, 0.98f); // Orange-Red
+                    else if (linkedSpell.Contains("light") || linkedSpell.Contains("rail")) targetColor = new Color(1f, 0.9f, 0.1f, 0.98f); // Yellow
+                    else targetColor = new Color(0.8f, 0.8f, 0.8f, 0.98f); // Default grayish white
+
+                    // Interpolate from red to target color based on score
+                    strokeColor = Color.Lerp(new Color(1f, 0.15f, 0.15f, 0.98f), targetColor, normalizedScore * normalizedScore);
+                }
+            }
+
+            magicCircleUI.UpdateUserLine(localStrokePoints, strokeColor);
+
+            if (worldSpaceMagicCircle != null && playerTransform != null)
+            {
+                worldSpaceMagicCircle.UpdateLine(normalizedStrokePoints, strokeColor, playerTransform);
+            }
         }
 
         private void FinishAttempt()
@@ -227,14 +294,11 @@ namespace DuckovProto.Runes
                 return;
             }
 
-            localStrokePoints.Clear();
-            normalizedStrokePoints.Clear();
             hasAnyStroke = false;
             state = DrawState.Idle;
 
             if (magicCircleUI != null)
             {
-                magicCircleUI.UpdateUserLine(localStrokePoints);
                 magicCircleUI.ShowMessage(message, 0.25f);
 
                 if (delayedCloseRoutine != null)
@@ -242,30 +306,53 @@ namespace DuckovProto.Runes
                     StopCoroutine(delayedCloseRoutine);
                 }
 
-                delayedCloseRoutine = StartCoroutine(CloseUiAfterDelay(0.25f));
+                delayedCloseRoutine = StartCoroutine(VisualFeedbackAndCloseRoutine(new Color(0.8f, 0.1f, 0.1f, 1f), 0.25f)); // Flash red for failure
             }
-
-            if (clearAimLockOnCancelOrFail && aimLockController != null)
+            else
             {
-                aimLockController.ClearLock();
+                ClearDrawData();
             }
         }
 
         private void FailAndClose(string message)
         {
+            if (state == DrawState.Idle) return;
             CancelDraw(message);
         }
 
         private void CleanupAfterFinish()
         {
             state = DrawState.Idle;
-            localStrokePoints.Clear();
-            normalizedStrokePoints.Clear();
             hasAnyStroke = false;
 
             if (magicCircleUI != null)
             {
+                if (delayedCloseRoutine != null)
+                {
+                    StopCoroutine(delayedCloseRoutine);
+                }
+                delayedCloseRoutine = StartCoroutine(VisualFeedbackAndCloseRoutine(new Color(0.1f, 0.8f, 0.3f, 1f), 0.35f)); // Flash green for success
+            }
+            else
+            {
+                ClearDrawData();
+            }
+        }
+
+        private void ClearDrawData()
+        {
+            localStrokePoints.Clear();
+            normalizedStrokePoints.Clear();
+
+            if (magicCircleUI != null)
+            {
+                magicCircleUI.UpdateUserLine(localStrokePoints);
                 magicCircleUI.Close();
+            }
+
+            if (worldSpaceMagicCircle != null)
+            {
+                worldSpaceMagicCircle.Hide();
             }
 
             if (clearAimLockOnSubmit && aimLockController != null)
@@ -274,14 +361,34 @@ namespace DuckovProto.Runes
             }
         }
 
-        private IEnumerator CloseUiAfterDelay(float delay)
+        private IEnumerator VisualFeedbackAndCloseRoutine(Color flashColor, float delay)
         {
-            yield return new WaitForSecondsRealtime(Mathf.Max(0f, delay));
-            delayedCloseRoutine = null;
+            float elapsed = 0f;
 
-            if (magicCircleUI != null)
+            // Initial flash
+            if (magicCircleUI != null) magicCircleUI.UpdateUserLine(localStrokePoints, flashColor);
+            if (worldSpaceMagicCircle != null) worldSpaceMagicCircle.UpdateLine(normalizedStrokePoints, flashColor, playerTransform);
+
+            while (elapsed < delay)
             {
-                magicCircleUI.Close();
+                elapsed += Time.unscaledDeltaTime;
+
+                // Fade out
+                float alpha = Mathf.Lerp(1f, 0f, elapsed / delay);
+                Color fadeColor = new Color(flashColor.r, flashColor.g, flashColor.b, alpha);
+
+                if (magicCircleUI != null) magicCircleUI.UpdateUserLine(localStrokePoints, fadeColor);
+                if (worldSpaceMagicCircle != null) worldSpaceMagicCircle.UpdateLine(normalizedStrokePoints, fadeColor, playerTransform);
+
+                yield return null;
+            }
+
+            delayedCloseRoutine = null;
+            ClearDrawData();
+
+            if (clearAimLockOnCancelOrFail && aimLockController != null && flashColor.r > flashColor.g) // Hacky way to check if it was a failure (red flash)
+            {
+                aimLockController.ClearLock();
             }
         }
     }

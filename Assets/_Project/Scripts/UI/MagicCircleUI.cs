@@ -57,7 +57,7 @@ namespace DuckovProto.UI
             HideMessageImmediate();
         }
 
-        public void UpdateUserLine(List<Vector2> localPoints)
+        public void UpdateUserLine(List<Vector2> localPoints, Color? overrideColor = null)
         {
             EnsureUi();
             if (!IsVisible)
@@ -65,12 +65,15 @@ namespace DuckovProto.UI
                 return;
             }
 
+            Color lineColor = overrideColor ?? new Color(1f, 0.15f, 0.15f, 0.98f);
+
             if (userLine != null)
             {
+                userLine.color = lineColor;
                 userLine.SetPoints(localPoints);
             }
 
-            UpdateUserSegments(localPoints);
+            UpdateUserSegments(localPoints, lineColor);
         }
 
         public void ShowMessage(string msg, float seconds = 0.25f)
@@ -383,7 +386,7 @@ namespace DuckovProto.UI
             }
         }
 
-        private void UpdateUserSegments(IReadOnlyList<Vector2> localPoints)
+        private void UpdateUserSegments(IReadOnlyList<Vector2> localPoints, Color color)
         {
             int needed = localPoints != null ? Mathf.Max(0, localPoints.Count - 1) : 0;
             EnsureUserSegmentPool(needed);
@@ -417,6 +420,12 @@ namespace DuckovProto.UI
                 segment.sizeDelta = new Vector2(len, userLineThickness);
                 float angle = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
                 segment.localRotation = Quaternion.Euler(0f, 0f, angle);
+
+                Image img = segment.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.color = color;
+                }
             }
         }
 
