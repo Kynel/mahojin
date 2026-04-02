@@ -14,6 +14,9 @@ namespace DuckovProto.Spells
         [SerializeField] private float visualDuration = 0.2f;
         [SerializeField] private bool enableVfx = true;
 
+        private static readonly Collider[] s_HitCache = new Collider[64];
+        private static readonly HashSet<Health> s_UniqueHits = new HashSet<Health>();
+
         public void Cast(Transform caster)
         {
             if (caster == null)
@@ -21,19 +24,19 @@ namespace DuckovProto.Spells
                 caster = transform;
             }
 
-            Collider[] hits = Physics.OverlapSphere(caster.position, radius, enemyMask);
-            HashSet<Health> unique = new HashSet<Health>();
+            s_UniqueHits.Clear();
+            int hitCount = Physics.OverlapSphereNonAlloc(caster.position, radius, s_HitCache, enemyMask);
             int puffCount = 0;
 
-            for (int i = 0; i < hits.Length; i++)
+            for (int i = 0; i < hitCount; i++)
             {
-                Health health = hits[i].GetComponentInParent<Health>();
-                if (health == null || unique.Contains(health))
+                Health health = s_HitCache[i].GetComponentInParent<Health>();
+                if (health == null || s_UniqueHits.Contains(health))
                 {
                     continue;
                 }
 
-                unique.Add(health);
+                s_UniqueHits.Add(health);
                 health.TakeDamage(damage);
                 if (enableVfx && puffCount < 5)
                 {
@@ -46,7 +49,6 @@ namespace DuckovProto.Spells
             {
                 SpawnVisual(caster.position);
             }
-            Debug.Log($"Nova hit {unique.Count} enemies", this);
         }
 
         private void SpawnVisual(Vector3 position)
