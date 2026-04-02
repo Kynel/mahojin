@@ -87,6 +87,42 @@ namespace DuckovProto.Runes
             return true;
         }
 
+        public (RuneDefinitionSO bestRune, float bestScore) EvaluateStrokeLive(IReadOnlyList<Vector2> stroke)
+        {
+            EnsureRecognizers();
+            if (scorer == null || lightningReferenceMatcher == null || runeLibrary == null || runeLibrary.Runes == null)
+            {
+                return (null, 0f);
+            }
+
+            RuneDefinitionSO bestRune = null;
+            float bestScore = -1f;
+
+            for (int i = 0; i < runeLibrary.Runes.Count; i++)
+            {
+                RuneDefinitionSO rune = runeLibrary.Runes[i];
+                if (rune == null) continue;
+
+                float score;
+                if (rune.UseReferenceStrokeComparison)
+                {
+                    score = lightningReferenceMatcher.Score(rune, stroke, out _);
+                }
+                else
+                {
+                    score = scorer.Score(rune, stroke, out _);
+                }
+
+                if (bestRune == null || score > bestScore)
+                {
+                    bestRune = rune;
+                    bestScore = score;
+                }
+            }
+
+            return (bestRune, Mathf.Max(0f, bestScore));
+        }
+
         private void Awake()
         {
             ResolveReferences();

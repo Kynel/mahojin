@@ -49,6 +49,8 @@ namespace DuckovProto.UI
         [SerializeField] private string restartScenePath = "Assets/_Project/Scenes/Prototype_Arena.unity";
 
         private Canvas canvas;
+        private RectTransform rootRectTransform;
+        private RectTransform runeExamplesPanelRect;
         private Image hpFill;
         private Image mpFill;
         private Text hpText;
@@ -214,6 +216,7 @@ namespace DuckovProto.UI
             root.anchorMax = new Vector2(1f, 1f);
             root.offsetMin = Vector2.zero;
             root.offsetMax = Vector2.zero;
+            rootRectTransform = root;
 
             BuildVitalsPanel(root);
             BuildStatePanel(root);
@@ -260,45 +263,50 @@ namespace DuckovProto.UI
         private void BuildRuneExamplesPanel(RectTransform root)
         {
             RectTransform panel = EnsureChildRect(root, "RuneExamplesPanel");
-            panel.anchorMin = new Vector2(1f, 0.5f);
-            panel.anchorMax = new Vector2(1f, 0.5f);
-            panel.pivot = new Vector2(1f, 0.5f);
-            panel.anchoredPosition = new Vector2(-20f, 0f);
-            panel.sizeDelta = new Vector2(460f, 400f);
+            panel.anchorMin = new Vector2(0.5f, 0.5f);
+            panel.anchorMax = new Vector2(0.5f, 0.5f);
+            panel.pivot = new Vector2(0.5f, 0.5f);
+            panel.anchoredPosition = new Vector2(0f, 300f);
+            panel.sizeDelta = new Vector2(700f, 150f);
 
-            Image bg = EnsureImage(panel, new Color(0f, 0f, 0f, 0.34f));
+            Image bg = EnsureImage(panel, new Color(0f, 0f, 0f, 0.15f));
             bg.raycastTarget = false;
 
-            Text title = EnsureText(panel, "Title", 19, TextAnchor.UpperLeft, new Color(1f, 0.96f, 0.84f, 0.96f));
-            title.text = "Rune Examples";
+            Text title = EnsureText(panel, "Title", 16, TextAnchor.UpperCenter, new Color(1f, 0.96f, 0.84f, 0.5f));
+            title.text = "Spell Guide";
             RectTransform titleRect = title.rectTransform;
             titleRect.anchorMin = new Vector2(0f, 1f);
             titleRect.anchorMax = new Vector2(1f, 1f);
-            titleRect.pivot = new Vector2(0f, 1f);
-            titleRect.anchoredPosition = new Vector2(12f, -10f);
-            titleRect.sizeDelta = new Vector2(-24f, 24f);
+            titleRect.pivot = new Vector2(0.5f, 1f);
+            titleRect.anchoredPosition = new Vector2(0f, -5f);
+            titleRect.sizeDelta = new Vector2(0f, 24f);
 
             RectTransform content = EnsureChildRect(panel, "Content");
             content.anchorMin = new Vector2(0f, 0f);
             content.anchorMax = new Vector2(1f, 1f);
             content.offsetMin = new Vector2(10f, 10f);
-            content.offsetMax = new Vector2(-10f, -42f);
+            content.offsetMax = new Vector2(-10f, -30f);
 
-            VerticalLayoutGroup layout = content.GetComponent<VerticalLayoutGroup>();
+            HorizontalLayoutGroup layout = content.GetComponent<HorizontalLayoutGroup>();
             if (layout == null)
             {
-                layout = content.gameObject.AddComponent<VerticalLayoutGroup>();
+                VerticalLayoutGroup vlg = content.GetComponent<VerticalLayoutGroup>();
+                if (vlg != null) DestroyImmediate(vlg);
+
+                layout = content.gameObject.AddComponent<HorizontalLayoutGroup>();
             }
 
-            layout.childAlignment = TextAnchor.UpperCenter;
-            layout.spacing = 8f;
-            layout.childControlHeight = false;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.spacing = 20f;
+            layout.childControlHeight = true;
             layout.childControlWidth = true;
-            layout.childForceExpandHeight = false;
+            layout.childForceExpandHeight = true;
             layout.childForceExpandWidth = true;
-            layout.padding = new RectOffset(0, 0, 0, 0);
+            layout.padding = new RectOffset(5, 5, 5, 5);
 
             EnsureRuneCardPool(content, 3);
+            panel.gameObject.SetActive(false); // Hide the panel by default
+            runeExamplesPanelRect = panel;
         }
 
         private void EnsureRuneCardPool(RectTransform parent, int count)
@@ -315,20 +323,23 @@ namespace DuckovProto.UI
                     element = cardRect.gameObject.AddComponent<LayoutElement>();
                 }
 
-                element.preferredHeight = 112f;
-                element.minHeight = 112f;
+                element.preferredHeight = 120f;
+                element.minHeight = 120f;
+                element.preferredWidth = 200f;
+                element.minWidth = 200f;
                 element.flexibleHeight = 0f;
+                element.flexibleWidth = 0f;
 
-                card.Background = EnsureImage(cardRect, new Color(0.08f, 0.08f, 0.08f, 0.66f));
+                card.Background = EnsureImage(cardRect, new Color(0.08f, 0.08f, 0.08f, 0.4f));
                 card.Background.raycastTarget = false;
                 card.Root = cardRect;
 
                 RectTransform preview = EnsureChildRect(cardRect, "Preview");
-                preview.anchorMin = new Vector2(0f, 0.5f);
-                preview.anchorMax = new Vector2(0f, 0.5f);
-                preview.pivot = new Vector2(0f, 0.5f);
-                preview.anchoredPosition = new Vector2(8f, 0f);
-                preview.sizeDelta = new Vector2(108f, 108f);
+                preview.anchorMin = new Vector2(0.5f, 0.5f);
+                preview.anchorMax = new Vector2(0.5f, 0.5f);
+                preview.pivot = new Vector2(0.5f, 0.5f);
+                preview.anchoredPosition = new Vector2(0f, 20f);
+                preview.sizeDelta = new Vector2(70f, 70f);
 
                 UiCircleFillGraphic fill = preview.GetComponent<UiCircleFillGraphic>();
                 if (fill == null)
@@ -336,7 +347,7 @@ namespace DuckovProto.UI
                     fill = preview.gameObject.AddComponent<UiCircleFillGraphic>();
                 }
 
-                fill.color = new Color(0f, 0f, 0f, 0.12f);
+                fill.color = new Color(0f, 0f, 0f, 0.2f);
                 fill.SetSegments(64);
                 fill.raycastTarget = false;
 
@@ -344,23 +355,23 @@ namespace DuckovProto.UI
                 borderRect.anchorMin = new Vector2(0.5f, 0.5f);
                 borderRect.anchorMax = new Vector2(0.5f, 0.5f);
                 borderRect.pivot = new Vector2(0.5f, 0.5f);
-                borderRect.sizeDelta = new Vector2(108f, 108f);
+                borderRect.sizeDelta = new Vector2(70f, 70f);
                 borderRect.anchoredPosition = Vector2.zero;
 
                 card.BorderLine = EnsurePolyline(borderRect, new Color(0.92f, 0.86f, 0.64f, 0.95f), 2.6f);
-                card.BorderLine.SetPoints(BuildCirclePoints(50f, 64));
+                card.BorderLine.SetPoints(BuildCirclePoints(32f, 64));
                 card.BorderLine.gameObject.SetActive(false);
 
                 card.BorderSegmentsRoot = EnsureChildRect(preview, "BorderSegmentsRoot");
                 card.BorderSegmentsRoot.anchorMin = new Vector2(0.5f, 0.5f);
                 card.BorderSegmentsRoot.anchorMax = new Vector2(0.5f, 0.5f);
                 card.BorderSegmentsRoot.pivot = new Vector2(0.5f, 0.5f);
-                card.BorderSegmentsRoot.sizeDelta = new Vector2(108f, 108f);
+                card.BorderSegmentsRoot.sizeDelta = new Vector2(70f, 70f);
                 card.BorderSegmentsRoot.anchoredPosition = Vector2.zero;
                 RenderSegmentLine(
                     card.BorderSegmentsRoot,
                     card.BorderSegments,
-                    BuildCirclePoints(50f, 64),
+                    BuildCirclePoints(32f, 64),
                     2.4f,
                     new Color(0.92f, 0.86f, 0.64f, 0.95f));
 
@@ -368,7 +379,7 @@ namespace DuckovProto.UI
                 guideRect.anchorMin = new Vector2(0.5f, 0.5f);
                 guideRect.anchorMax = new Vector2(0.5f, 0.5f);
                 guideRect.pivot = new Vector2(0.5f, 0.5f);
-                guideRect.sizeDelta = new Vector2(108f, 108f);
+                guideRect.sizeDelta = new Vector2(70f, 70f);
                 guideRect.anchoredPosition = Vector2.zero;
                 card.GuideLine = EnsurePolyline(guideRect, new Color(0.96f, 0.96f, 0.96f, 1f), 4.4f);
                 card.GuideLine.gameObject.SetActive(false);
@@ -377,14 +388,14 @@ namespace DuckovProto.UI
                 card.GuideSegmentsRoot.anchorMin = new Vector2(0.5f, 0.5f);
                 card.GuideSegmentsRoot.anchorMax = new Vector2(0.5f, 0.5f);
                 card.GuideSegmentsRoot.pivot = new Vector2(0.5f, 0.5f);
-                card.GuideSegmentsRoot.sizeDelta = new Vector2(108f, 108f);
+                card.GuideSegmentsRoot.sizeDelta = new Vector2(70f, 70f);
                 card.GuideSegmentsRoot.anchoredPosition = Vector2.zero;
 
                 card.StrictRoot = EnsureChildRect(preview, "StrictRoot");
                 card.StrictRoot.anchorMin = new Vector2(0.5f, 0.5f);
                 card.StrictRoot.anchorMax = new Vector2(0.5f, 0.5f);
                 card.StrictRoot.pivot = new Vector2(0.5f, 0.5f);
-                card.StrictRoot.sizeDelta = new Vector2(108f, 108f);
+                card.StrictRoot.sizeDelta = new Vector2(70f, 70f);
                 card.StrictRoot.anchoredPosition = Vector2.zero;
 
                 RectTransform startDotRect = EnsureChildRect(preview, "StartDot");
@@ -401,29 +412,30 @@ namespace DuckovProto.UI
                 endDotRect.sizeDelta = new Vector2(8f, 8f);
                 card.EndDot = EnsureImage(endDotRect, new Color(1f, 0.42f, 0.42f, 0.95f));
 
-                card.NameText = EnsureText(cardRect, "Name", 17, TextAnchor.UpperLeft, new Color(0.97f, 0.97f, 0.97f, 1f));
+                card.NameText = EnsureText(cardRect, "Name", 16, TextAnchor.UpperCenter, new Color(0.97f, 0.97f, 0.97f, 1f));
                 RectTransform nameRect = card.NameText.rectTransform;
-                nameRect.anchorMin = new Vector2(0f, 1f);
-                nameRect.anchorMax = new Vector2(1f, 1f);
-                nameRect.pivot = new Vector2(0f, 1f);
-                nameRect.anchoredPosition = new Vector2(124f, -8f);
-                nameRect.sizeDelta = new Vector2(-132f, 20f);
+                nameRect.anchorMin = new Vector2(0f, 0f);
+                nameRect.anchorMax = new Vector2(1f, 0f);
+                nameRect.pivot = new Vector2(0.5f, 0f);
+                nameRect.anchoredPosition = new Vector2(0f, 22f);
+                nameRect.sizeDelta = new Vector2(0f, 20f);
 
-                card.DescText = EnsureText(cardRect, "Desc", 13, TextAnchor.UpperLeft, new Color(0.9f, 0.9f, 0.9f, 0.96f));
+                card.DescText = EnsureText(cardRect, "Desc", 12, TextAnchor.UpperCenter, new Color(0.8f, 0.8f, 0.8f, 0.96f));
                 RectTransform descRect = card.DescText.rectTransform;
-                descRect.anchorMin = new Vector2(0f, 1f);
-                descRect.anchorMax = new Vector2(1f, 1f);
-                descRect.pivot = new Vector2(0f, 1f);
-                descRect.anchoredPosition = new Vector2(124f, -32f);
-                descRect.sizeDelta = new Vector2(-132f, 42f);
+                descRect.anchorMin = new Vector2(0f, 0f);
+                descRect.anchorMax = new Vector2(1f, 0f);
+                descRect.pivot = new Vector2(0.5f, 0f);
+                descRect.anchoredPosition = new Vector2(0f, 5f);
+                descRect.sizeDelta = new Vector2(0f, 30f);
 
-                card.ScoreText = EnsureText(cardRect, "Score", 12, TextAnchor.UpperLeft, new Color(0.86f, 0.94f, 1f, 0.97f));
+                card.ScoreText = EnsureText(cardRect, "Score", 10, TextAnchor.UpperCenter, new Color(0.86f, 0.94f, 1f, 0.5f));
                 RectTransform scoreRect = card.ScoreText.rectTransform;
                 scoreRect.anchorMin = new Vector2(0f, 0f);
                 scoreRect.anchorMax = new Vector2(1f, 0f);
-                scoreRect.pivot = new Vector2(0f, 0f);
-                scoreRect.anchoredPosition = new Vector2(124f, 8f);
-                scoreRect.sizeDelta = new Vector2(-132f, 18f);
+                scoreRect.pivot = new Vector2(0.5f, 0f);
+                scoreRect.anchoredPosition = new Vector2(0f, 40f);
+                scoreRect.sizeDelta = new Vector2(0f, 18f);
+                card.ScoreText.gameObject.SetActive(false);
 
                 runeCards.Add(card);
             }
@@ -496,6 +508,19 @@ namespace DuckovProto.UI
 
             IReadOnlyList<RuneDefinitionSO> runes = library.Runes;
             int count = Mathf.Min(runeCards.Count, runes != null ? runes.Count : 0);
+
+            bool isCastingMode = UnityEngine.InputSystem.Mouse.current != null &&
+                                 UnityEngine.InputSystem.Mouse.current.rightButton.isPressed;
+
+            if (runeExamplesPanelRect != null && runeExamplesPanelRect.gameObject.activeSelf != isCastingMode)
+            {
+                runeExamplesPanelRect.gameObject.SetActive(isCastingMode);
+            }
+
+            if (!isCastingMode)
+            {
+                return;
+            }
 
             string newSignature = BuildRuneSignature(runes, count);
             if (newSignature != runeSetSignature)
@@ -582,13 +607,13 @@ namespace DuckovProto.UI
             card.DescText.text = BuildRuneDescription(rune);
 
             IReadOnlyList<Vector2> previewSource = GetPreviewStrokeSource(rune);
-            List<Vector2> guide = ConvertGuideToPreview(previewSource, 40f);
+            List<Vector2> guide = ConvertGuideToPreview(previewSource, 25f);
             card.GuideLine.SetPoints(guide);
             RenderSegmentLine(
                 card.GuideSegmentsRoot,
                 card.GuideSegments,
                 guide,
-                5.2f,
+                3.2f,
                 new Color(0.96f, 0.96f, 0.96f, 1f));
             if (guide.Count > 0 && card.StartDot != null)
             {
@@ -625,12 +650,12 @@ namespace DuckovProto.UI
                         rune.StrictSegmentStartIdx,
                         rune.StrictSegmentEndIdx,
                         127,
-                        40f);
+                        25f);
                 }
                 else
                 {
                     StrictSegment seg = rune.StrictSegments[i];
-                    strictPoints = BuildStrictSegmentPreview(rune.GuidePolylineNorm, seg, 40f);
+                    strictPoints = BuildStrictSegmentPreview(rune.GuidePolylineNorm, seg, 25f);
                 }
 
                 strictLine.SetPoints(strictPoints);
