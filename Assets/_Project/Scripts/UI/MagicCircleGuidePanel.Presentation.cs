@@ -154,7 +154,7 @@ namespace DuckovProto.UI
             card.Root.anchorMax = new Vector2(1f, 1f);
             card.Root.pivot = new Vector2(0f, 1f);
             card.Root.anchoredPosition = new Vector2(0f, -(index * 96f));
-            card.Root.sizeDelta = new Vector2(0f, 88f);
+            card.Root.sizeDelta = new Vector2(0f, 96f); // Larger list items
 
             bool selected = circle.Id == selectedCircleId;
             bool best = magicCircleCastPipeline != null && circle.Id == magicCircleCastPipeline.LastBestCircleId;

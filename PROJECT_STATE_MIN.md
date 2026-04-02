@@ -80,6 +80,8 @@
 - [x] unreferenced legacy projectile helper scripts removed
 - [x] HUD / guide panel runtime lookup consolidated into `MagicCircleRuntimeLocator`
 - [x] `MagicCircleGuidePanel` / `GameHUD` partial split로 layout/bootstrap/presentation 책임 분리
+- [x] UI Polish: GameHUD 퀄리티 업 (Voxel style color/border), Feedback popup 애니메이션 시스템 연동
+- [x] UI Polish: MagicCircleGuidePanel 다크 모드 배경, 텍스트 가독성 및 spacing 개선
 
 ## wip
 - play_tuning: 실제 Play Mode에서 threshold와 shape 감각 확인 필요
@@ -87,7 +89,6 @@
 ## todo
 - verify_unity_playmode: `Prototype_Arena`에서 실제 draw/cast feel 확인
 - tune_thresholds: water/fire/lightning `passThreshold` 실전값 미세 조정
-- ui_polish: `MagicCircleGuidePanel` spacing 최종 점검
 
 ## known_issues
 - playmode_gap: 본 세션에서는 Unity Editor Play Mode 직접 실행 검증은 못함
