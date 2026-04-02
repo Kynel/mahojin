@@ -5,6 +5,8 @@ namespace DuckovProto.Combat
     [DisallowMultipleComponent]
     public sealed class AimLockController : MonoBehaviour
     {
+        private static readonly RaycastHit[] CursorHitBuffer = new RaycastHit[16];
+
         private enum LockMode
         {
             None,
@@ -14,6 +16,7 @@ namespace DuckovProto.Combat
 
         [SerializeField] private LayerMask enemyMask = 1 << 8;
         [SerializeField] private LayerMask groundMask = 1 << 7;
+        [SerializeField] private LayerMask wallMask = 1 << 10;
         [SerializeField] private float lockDuration = 3f;
         [SerializeField] private float aimPointHeightOffset = 0.6f;
         [SerializeField] private bool lockIgnoresLOS = true;
@@ -46,21 +49,34 @@ namespace DuckovProto.Combat
 
             Ray ray = cam.ScreenPointToRay(screenPos);
             const float maxRayDistance = 500f;
-
-            if (Physics.Raycast(ray, out RaycastHit enemyHit, maxRayDistance, enemyMask, QueryTriggerInteraction.Ignore))
+            int mask = enemyMask.value | groundMask.value | wallMask.value;
+            if (mask == 0)
             {
-                lockMode = LockMode.Target;
-                targetTransform = ResolveEnemyRoot(enemyHit.transform);
-                pointLockWorld = enemyHit.point;
-                lockExpireTime = Time.time + Mathf.Max(0.01f, lockDuration);
+                ClearLock();
                 return;
             }
 
-            if (Physics.Raycast(ray, out RaycastHit groundHit, maxRayDistance, groundMask, QueryTriggerInteraction.Ignore))
+            int hitCount = Physics.RaycastNonAlloc(
+                ray,
+                CursorHitBuffer,
+                maxRayDistance,
+                mask,
+                QueryTriggerInteraction.Ignore);
+
+            if (hitCount > 0 && TryResolveCursorHit(hitCount, out RaycastHit bestHit, out bool hitEnemy))
             {
+                if (hitEnemy)
+                {
+                    lockMode = LockMode.Target;
+                    targetTransform = ResolveEnemyRoot(bestHit.transform);
+                    pointLockWorld = bestHit.point;
+                    lockExpireTime = Time.time + Mathf.Max(0.01f, lockDuration);
+                    return;
+                }
+
                 lockMode = LockMode.Point;
                 targetTransform = null;
-                pointLockWorld = groundHit.point;
+                pointLockWorld = bestHit.point;
                 lockExpireTime = Time.time + Mathf.Max(0.01f, lockDuration);
                 return;
             }
@@ -77,7 +93,7 @@ namespace DuckovProto.Combat
 
             if (lockMode == LockMode.Target && targetTransform != null)
             {
-                return targetTransform.position + (Vector3.up * aimPointHeightOffset);
+                return ResolveTargetAimPointWorld(targetTransform);
             }
 
             if (lockMode == LockMode.Point)
@@ -113,6 +129,27 @@ namespace DuckovProto.Combat
             }
 
             return dir.normalized;
+        }
+
+        private Vector3 ResolveTargetAimPointWorld(Transform target)
+        {
+            if (target == null)
+            {
+                return transform.position + (transform.forward * 8f) + (Vector3.up * aimPointHeightOffset);
+            }
+
+            Collider targetCollider = target.GetComponent<Collider>();
+            if (targetCollider == null)
+            {
+                targetCollider = target.GetComponentInChildren<Collider>();
+            }
+
+            if (targetCollider != null)
+            {
+                return targetCollider.bounds.center + (Vector3.up * aimPointHeightOffset);
+            }
+
+            return target.position + (Vector3.up * aimPointHeightOffset);
         }
 
         public void ClearLock()
@@ -182,6 +219,95 @@ namespace DuckovProto.Combat
             }
 
             return source;
+        }
+
+        private bool TryResolveCursorHit(int hitCount, out RaycastHit bestHit, out bool hitEnemy)
+        {
+            bestHit = default;
+            hitEnemy = false;
+
+            bool foundEnemy = false;
+            bool foundGround = false;
+            bool foundWall = false;
+            RaycastHit nearestEnemy = default;
+            RaycastHit nearestGround = default;
+            RaycastHit nearestWall = default;
+            float nearestEnemyDistance = float.MaxValue;
+            float nearestGroundDistance = float.MaxValue;
+            float nearestWallDistance = float.MaxValue;
+
+            for (int i = 0; i < hitCount; i++)
+            {
+                RaycastHit candidate = CursorHitBuffer[i];
+                Collider col = candidate.collider;
+                if (col == null)
+                {
+                    continue;
+                }
+
+                int layerMask = 1 << col.gameObject.layer;
+                bool isEnemy = (enemyMask.value & layerMask) != 0;
+                bool isGround = (groundMask.value & layerMask) != 0;
+                bool isWall = (wallMask.value & layerMask) != 0;
+                if (!isEnemy && !isGround && !isWall)
+                {
+                    continue;
+                }
+
+                if (candidate.distance < 0f)
+                {
+                    continue;
+                }
+
+                if (isWall && candidate.distance < nearestWallDistance)
+                {
+                    foundWall = true;
+                    nearestWallDistance = candidate.distance;
+                    nearestWall = candidate;
+                }
+
+                if (isEnemy && candidate.distance < nearestEnemyDistance)
+                {
+                    foundEnemy = true;
+                    nearestEnemyDistance = candidate.distance;
+                    nearestEnemy = candidate;
+                }
+
+                if (isGround && candidate.distance < nearestGroundDistance)
+                {
+                    foundGround = true;
+                    nearestGroundDistance = candidate.distance;
+                    nearestGround = candidate;
+                }
+            }
+
+            // Keep walls as cover, but prefer an enemy over ground when the enemy is not occluded.
+            if (foundEnemy && (!foundWall || nearestEnemyDistance <= nearestWallDistance))
+            {
+                bestHit = nearestEnemy;
+                hitEnemy = true;
+                return true;
+            }
+
+            if (foundWall && (!foundGround || nearestWallDistance <= nearestGroundDistance))
+            {
+                bestHit = nearestWall;
+                return true;
+            }
+
+            if (foundGround)
+            {
+                bestHit = nearestGround;
+                return true;
+            }
+
+            if (foundWall)
+            {
+                bestHit = nearestWall;
+                return true;
+            }
+
+            return false;
         }
     }
 }

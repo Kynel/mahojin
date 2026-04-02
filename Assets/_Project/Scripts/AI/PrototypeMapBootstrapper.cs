@@ -418,22 +418,20 @@ namespace DuckovProto.AI
 
         private void PlacePlayer(Vector3 spawnPos)
         {
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player == null)
+            if (!PlayerRuntimeLocator.TryGetTransform(out Transform playerTransform))
             {
                 return;
             }
 
-            player.transform.position = spawnPos;
-            Rigidbody rb = player.GetComponent<Rigidbody>();
+            playerTransform.position = spawnPos;
+            Rigidbody rb = playerTransform.GetComponent<Rigidbody>();
             if (rb != null)
             {
                 rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
             }
 
-            PlayerVitals vitals = player.GetComponent<PlayerVitals>();
-            if (vitals != null)
+            if (PlayerRuntimeLocator.TryGetVitals(out PlayerVitals vitals))
             {
                 vitals.ResetToFull();
             }

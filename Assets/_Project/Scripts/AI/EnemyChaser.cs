@@ -1,3 +1,4 @@
+using DuckovProto.Player;
 using UnityEngine;
 
 namespace DuckovProto.AI
@@ -94,13 +95,9 @@ namespace DuckovProto.AI
 
         private void Update()
         {
-            if (target == null)
+            if (target == null && PlayerRuntimeLocator.TryGetTransform(out Transform playerTransform))
             {
-                GameObject player = GameObject.FindWithTag("Player");
-                if (player != null)
-                {
-                    target = player.transform;
-                }
+                target = playerTransform;
             }
         }
 

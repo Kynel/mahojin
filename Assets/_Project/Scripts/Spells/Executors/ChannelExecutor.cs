@@ -72,7 +72,7 @@ namespace DuckovProto.Spells.Executors
                     ctx.aimLock.EnsureLockUntil(remaining + 0.2f);
                 }
 
-                Vector3 direction = ctx.ResolveAimDirection();
+                Vector3 direction = ctx.ResolveAimDirection(0.95f);
                 Vector3 origin = ctx.ResolveCastOrigin(0.95f);
 
                 loopVfxTimer -= Time.deltaTime;

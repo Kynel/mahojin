@@ -15,11 +15,17 @@ namespace DuckovProto.Spells
         public Camera cam;
         public Action<string> stateReporter;
 
-        public Vector3 ResolveAimDirection()
+        public Vector3 ResolveAimDirection(float castOriginHeightOffset = 1f)
         {
             if (aimLock != null && aimLock.HasLock)
             {
-                return aimLock.GetLockedAimDirection(caster);
+                Vector3 origin = ResolveCastOrigin(castOriginHeightOffset);
+                Vector3 targetPoint = aimLock.GetLockedAimPointWorld();
+                Vector3 lockedDirection = targetPoint - origin;
+                if (lockedDirection.sqrMagnitude > 0.0001f)
+                {
+                    return lockedDirection.normalized;
+                }
             }
 
             Vector3 fallback = caster != null ? caster.forward : Vector3.forward;

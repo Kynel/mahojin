@@ -716,7 +716,6 @@ GameObject:
   m_Component:
   - component: {fileID: 910002}
   - component: {fileID: 910003}
-  - component: {fileID: 910004}
   - component: {fileID: 910005}
   m_Layer: 0
   m_Name: EnemySpawner
@@ -754,28 +753,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPrefab: {fileID: 100100000, guid: 60e6ee2a8c0547ec957240c62ab9cee1, type: 3}
   spawnPoints: []
-  maxAlive: 5
-  initialSpawnCount: 5
+  maxAlive: 8
+  initialSpawnCount: 8
   spawnInterval: 0.25
   randomSpawnRadius: 14
   minDistanceFromPlayer: 5
   maxSpawnAttempts: 12
   enableDebugLogs: 1
---- !u!114 &910004
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 910001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 434ae258aa064f0bb8c771c5b5a81025, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  runeCastController: {fileID: 0}
-  line1Text: {fileID: 0}
-  line2Text: {fileID: 0}
 --- !u!114 &910005
 MonoBehaviour:
   m_ObjectHideFlags: 0

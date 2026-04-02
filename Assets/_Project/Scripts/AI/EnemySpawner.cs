@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DuckovProto.Combat;
+using DuckovProto.Player;
 using UnityEngine;
 
 namespace DuckovProto.AI
@@ -9,8 +10,8 @@ namespace DuckovProto.AI
         [SerializeField] private GameObject enemyPrefab;
         [SerializeField] private Transform[] spawnPoints;
         [SerializeField] private bool prioritizeSpawnPoints = true;
-        [SerializeField] private int maxAlive = 5;
-        [SerializeField] private int initialSpawnCount = 5;
+        [SerializeField] private int maxAlive = 8;
+        [SerializeField] private int initialSpawnCount = 8;
         [SerializeField] private float spawnInterval = 0.25f;
         [SerializeField] private float randomSpawnRadius = 14f;
         [SerializeField] private float minDistanceFromPlayer = 5f;
@@ -132,13 +133,12 @@ namespace DuckovProto.AI
 
         private bool IsTooCloseToPlayer(Vector3 position)
         {
-            GameObject player = GameObject.FindWithTag("Player");
-            if (player == null)
+            if (!PlayerRuntimeLocator.TryGetTransform(out Transform playerTransform))
             {
                 return false;
             }
 
-            Vector3 delta = player.transform.position - position;
+            Vector3 delta = playerTransform.position - position;
             delta.y = 0f;
             return delta.sqrMagnitude < minDistanceFromPlayer * minDistanceFromPlayer;
         }

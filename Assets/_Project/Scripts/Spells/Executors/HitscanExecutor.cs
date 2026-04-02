@@ -21,7 +21,7 @@ namespace DuckovProto.Spells.Executors
             float damage = Mathf.Max(0f, spell.Damage);
 
             Vector3 origin = ctx.ResolveCastOrigin(0.95f);
-            Vector3 direction = ctx.ResolveAimDirection();
+            Vector3 direction = ctx.ResolveAimDirection(0.95f);
             Vector3 endPoint = origin + direction * range;
 
             bool damaged = false;

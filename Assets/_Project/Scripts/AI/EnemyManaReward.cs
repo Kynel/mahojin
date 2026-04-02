@@ -10,7 +10,6 @@ namespace DuckovProto.AI
     {
         [SerializeField] private float killManaRestore = 10f;
         [SerializeField] private Mana playerMana;
-        [SerializeField] private string playerTag = "Player";
 
         private Health health;
 
@@ -57,33 +56,7 @@ namespace DuckovProto.AI
                 return true;
             }
 
-            GameObject player = GameObject.FindWithTag(playerTag);
-            if (player != null)
-            {
-                playerMana = player.GetComponent<Mana>();
-                if (playerMana != null)
-                {
-                    return true;
-                }
-
-                PlayerVitals vitals = player.GetComponent<PlayerVitals>();
-                if (vitals != null)
-                {
-                    playerMana = vitals.ManaComponent;
-                    if (playerMana != null)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            PlayerVitals fallbackVitals = FindFirstObjectByType<PlayerVitals>();
-            if (fallbackVitals != null)
-            {
-                playerMana = fallbackVitals.ManaComponent;
-            }
-
-            return playerMana != null;
+            return PlayerRuntimeLocator.TryGetMana(out playerMana);
         }
     }
 }

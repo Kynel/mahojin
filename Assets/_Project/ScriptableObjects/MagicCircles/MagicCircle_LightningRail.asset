@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8bdabbceac9441e9050e8d9b532f0e4, type: 3}
+  m_Name: MagicCircle_LightningRail
+  m_EditorClassIdentifier: 
+  id: magic_circle_lightning
+  displayName: Lightning
+  description: Sharp angular magic circle for an instant lightning rail.
+  linkedSpellId: spell_lightning_rail
+  enabled: 1
+  themeColor: {r: 1, g: 0.9, b: 0.4, a: 1}
+  referenceStrokeNorm:
+  - {x: -0.48, y: 0.86}
+  - {x: -0.1, y: 0.32}
+  - {x: 0.22, y: 0.02}
+  - {x: -0.04, y: -0.18}
+  - {x: 0.3, y: -0.52}
+  - {x: 0.56, y: -0.86}
+  passThreshold: 0.69
+  resampleCount: 128
+  allowReverseStroke: 1
+  autoNormalizeScale: 1
+  autoNormalizeRotation: 1
+  autoNormalizeTranslation: 1
+  optionalPreviewSprite: {fileID: 0}
+  howToDrawHint: Start high on the left, snap to the right, cut down hard, then finish diagonally.

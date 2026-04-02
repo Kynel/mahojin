@@ -11,7 +11,6 @@ namespace DuckovProto.AI
         [SerializeField] private float tickInterval = 0.25f;
         [SerializeField] private float contactRange = 1.35f;
         [SerializeField] private Transform rangeOrigin;
-        [SerializeField] private string playerTag = "Player";
 
         private Transform targetTransform;
         private Health targetHealth;
@@ -59,36 +58,13 @@ namespace DuckovProto.AI
                 return true;
             }
 
-            GameObject player = GameObject.FindWithTag(playerTag);
-            if (player == null)
+            if (!PlayerRuntimeLocator.TryGetTransform(out targetTransform))
             {
-                PlayerVitals vitalsFallback = FindFirstObjectByType<PlayerVitals>();
-                if (vitalsFallback == null)
-                {
-                    return false;
-                }
-
-                targetTransform = vitalsFallback.transform;
-                targetHealth = vitalsFallback.HealthComponent;
-                return targetHealth != null;
+                targetHealth = null;
+                return false;
             }
 
-            targetTransform = player.transform;
-            targetHealth = player.GetComponent<Health>();
-            if (targetHealth == null)
-            {
-                targetHealth = player.GetComponentInParent<Health>();
-            }
-
-            if (targetHealth == null)
-            {
-                PlayerVitals vitals = player.GetComponent<PlayerVitals>();
-                if (vitals != null)
-                {
-                    targetHealth = vitals.HealthComponent;
-                }
-            }
-
+            PlayerRuntimeLocator.TryGetHealth(out targetHealth);
             return targetHealth != null;
         }
     }

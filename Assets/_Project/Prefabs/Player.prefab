@@ -310,15 +310,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1446618755483896204}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f8f00b6b338469ab145318f93f6f6d7, type: 3}
+  m_Script: {fileID: 11500000, guid: fd06a14d88ef4d49b1c9f2a25a4d33de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   magicCircleDrawController: {fileID: 775019}
-  runeCastController: {fileID: 775006}
-  spellRunner: {fileID: 775021}
+  magicCircleCastController: {fileID: 775006}
   aimLockController: {fileID: 775018}
   caster: {fileID: 658882836207724101}
-  runeLibrary: {fileID: 11400000, guid: 0c05bc71657d4665b9baac9990201b35, type: 2}
+  magicCircleLibrary: {fileID: 11400000, guid: b5c95fdb84ad432bad384d1168c625ca, type: 2}
   spellLibrary: {fileID: 11400000, guid: ee710c11139346cf85d630c5f70c58cf, type: 2}
   enemyMask:
     serializedVersion: 2
@@ -329,14 +328,9 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 128
-  useLightningTemplateRecognizer: 1
-  lightningTemplatePassScore: 0.64
-  minimumAcceptScore: 0.35
-  scoreCacheLifetime: 8
+  recentEvaluationLifetime: 5
   resolvedMessageDuration: 0.35
   unclearMessageDuration: 0.45
-  allowLowScoreFallback: 0
-  lowScoreFallbackMin: 0.45
   logResolveDetails: 1
 --- !u!114 &775006
 MonoBehaviour:

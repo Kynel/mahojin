@@ -31,7 +31,7 @@ namespace DuckovProto.Spells.Executors
             int remainingBounces = Mathf.Max(0, spell.BounceCount);
             float damage = Mathf.Max(0f, spell.Damage);
 
-            Vector3 direction = ctx.ResolveAimDirection();
+            Vector3 direction = ctx.ResolveAimDirection(0.92f);
             Vector3 position = ctx.ResolveCastOrigin(0.92f) + (direction * 0.65f);
             GameObject visual = CreateWaterProjectileVisual(position);
 
