@@ -139,7 +139,7 @@ public class ReadmeEditor : Editor
 
             if (!string.IsNullOrEmpty(section.linkText))
             {
-                if (LinkLabel(new GUIContent(section.linkText)))
+                if (LinkLabel(new GUIContent(section.linkText)) && ValidateUrl(section.url))
                 {
                     Application.OpenURL(section.url);
                 }
@@ -152,6 +152,13 @@ public class ReadmeEditor : Editor
         {
             RemoveTutorial();
         }
+    }
+
+    static bool ValidateUrl(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return false;
+        return url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+               url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
     }
 
     bool m_Initialized;
