@@ -119,6 +119,11 @@ namespace DuckovProto.MagicCircles
             lastSpellName = GetSpellDisplayName(spell);
             failReason = string.Empty;
             SetTransientStateText($"Cast: {lastSpellName}", 0.2f);
+
+            if (DuckovProto.UI.GameHUD.TryGetInstance(out var hud))
+            {
+                hud.ShowFeedback(lastSpellName, new Color(0.4f, 1f, 0.4f, 1f));
+            }
             return true;
         }
 
@@ -308,6 +313,11 @@ namespace DuckovProto.MagicCircles
         {
             lastSpellName = "Blocked";
             SetTransientStateText(failReason, statusMessageDuration);
+
+            if (DuckovProto.UI.GameHUD.TryGetInstance(out var hud))
+            {
+                hud.ShowFeedback(failReason, new Color(1f, 0.4f, 0.4f, 1f));
+            }
         }
 
         private void SetTransientStateText(string text, float duration)

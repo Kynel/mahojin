@@ -269,6 +269,11 @@ namespace DuckovProto.MagicCircles
             {
                 aimLockController.ClearLock();
             }
+
+            if (DuckovProto.UI.GameHUD.TryGetInstance(out var hud))
+            {
+                hud.ShowFeedback(message, new Color(1f, 0.8f, 0.2f, 1f));
+            }
         }
 
         private void FailAndClose(string message)

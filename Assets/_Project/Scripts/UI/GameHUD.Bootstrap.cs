@@ -70,6 +70,7 @@ namespace DuckovProto.UI
             BuildVitalsPanel(root);
             BuildStatePanel(root);
             BuildSystemButtons(root);
+            BuildFeedbackPanel(root);
         }
 
         private void EnsureMagicCircleGuidePanel()

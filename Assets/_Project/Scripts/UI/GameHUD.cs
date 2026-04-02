@@ -25,6 +25,19 @@ namespace DuckovProto.UI
         private Text mpText;
         private Text stateText;
 
+        // Feedback UI elements
+        private Text feedbackText;
+        private CanvasGroup feedbackCanvasGroup;
+        private Coroutine feedbackCoroutine;
+
+        private static GameHUD instance;
+
+        public static bool TryGetInstance(out GameHUD hud)
+        {
+            hud = instance;
+            return hud != null;
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Bootstrap()
         {
@@ -39,10 +52,19 @@ namespace DuckovProto.UI
 
         private void Awake()
         {
+            instance = this;
             EnsureEventSystem();
             EnsureCanvasAndLayout();
             ResolveReferences();
             EnsureMagicCircleGuidePanel();
+        }
+
+        private void OnDestroy()
+        {
+            if (instance == this)
+            {
+                instance = null;
+            }
         }
 
         private void Update()
@@ -50,6 +72,49 @@ namespace DuckovProto.UI
             ResolveReferences();
             UpdateVitals();
             UpdateStateMessage();
+        }
+
+        public void ShowFeedback(string message, Color color)
+        {
+            if (feedbackText == null || feedbackCanvasGroup == null) return;
+
+            feedbackText.text = message;
+            feedbackText.color = color;
+
+            if (feedbackCoroutine != null)
+            {
+                StopCoroutine(feedbackCoroutine);
+            }
+            feedbackCoroutine = StartCoroutine(AnimateFeedback());
+        }
+
+        private System.Collections.IEnumerator AnimateFeedback()
+        {
+            // Popup
+            feedbackCanvasGroup.alpha = 1f;
+            RectTransform rect = feedbackText.rectTransform;
+            rect.localScale = Vector3.one * 1.5f;
+
+            float t = 0;
+            while (t < 0.15f)
+            {
+                t += Time.deltaTime;
+                rect.localScale = Vector3.Lerp(Vector3.one * 1.5f, Vector3.one, t / 0.15f);
+                yield return null;
+            }
+            rect.localScale = Vector3.one;
+
+            yield return new WaitForSeconds(0.8f);
+
+            // Fade out
+            t = 0;
+            while (t < 0.3f)
+            {
+                t += Time.deltaTime;
+                feedbackCanvasGroup.alpha = Mathf.Lerp(1f, 0f, t / 0.3f);
+                yield return null;
+            }
+            feedbackCanvasGroup.alpha = 0f;
         }
 
         private void ResolveReferences()

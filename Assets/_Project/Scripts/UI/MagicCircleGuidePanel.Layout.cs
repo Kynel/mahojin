@@ -180,29 +180,29 @@ namespace DuckovProto.UI
             previewHost.sizeDelta = new Vector2(64f, 64f);
             card.Preview = BuildPreview(previewHost, "MiniPreview", 64f, 5f, 2.5f);
 
-            card.NameText = EnsureText(card.Root, "Name", 14, TextAnchor.UpperLeft, Color.white);
+            card.NameText = EnsureText(card.Root, "Name", 15, TextAnchor.UpperLeft, Color.white);
             RectTransform nameRect = card.NameText.rectTransform;
             nameRect.anchorMin = new Vector2(0f, 1f);
             nameRect.anchorMax = new Vector2(1f, 1f);
             nameRect.pivot = new Vector2(0f, 1f);
-            nameRect.anchoredPosition = new Vector2(82f, -10f);
-            nameRect.sizeDelta = new Vector2(-90f, 18f);
+            nameRect.anchoredPosition = new Vector2(82f, -14f);
+            nameRect.sizeDelta = new Vector2(-90f, 20f);
 
-            card.SpellText = EnsureText(card.Root, "Spell", 11, TextAnchor.UpperLeft, new Color(0.82f, 0.90f, 0.98f, 0.96f));
+            card.SpellText = EnsureText(card.Root, "Spell", 12, TextAnchor.UpperLeft, new Color(0.82f, 0.90f, 0.98f, 0.96f));
             RectTransform spellRect = card.SpellText.rectTransform;
             spellRect.anchorMin = new Vector2(0f, 1f);
             spellRect.anchorMax = new Vector2(1f, 1f);
             spellRect.pivot = new Vector2(0f, 1f);
-            spellRect.anchoredPosition = new Vector2(82f, -30f);
-            spellRect.sizeDelta = new Vector2(-90f, 16f);
+            spellRect.anchoredPosition = new Vector2(82f, -36f);
+            spellRect.sizeDelta = new Vector2(-90f, 18f);
 
-            card.ScoreText = EnsureText(card.Root, "Score", 11, TextAnchor.UpperLeft, Color.white);
+            card.ScoreText = EnsureText(card.Root, "Score", 13, TextAnchor.UpperLeft, Color.white);
             RectTransform scoreRect = card.ScoreText.rectTransform;
             scoreRect.anchorMin = new Vector2(0f, 1f);
             scoreRect.anchorMax = new Vector2(1f, 1f);
             scoreRect.pivot = new Vector2(0f, 1f);
-            scoreRect.anchoredPosition = new Vector2(82f, -50f);
-            scoreRect.sizeDelta = new Vector2(-90f, 24f);
+            scoreRect.anchoredPosition = new Vector2(82f, -58f);
+            scoreRect.sizeDelta = new Vector2(-90f, 26f);
 
             return card;
         }

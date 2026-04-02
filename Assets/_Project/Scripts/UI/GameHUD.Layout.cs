@@ -11,14 +11,49 @@ namespace DuckovProto.UI
             panel.anchorMin = new Vector2(0f, 0f);
             panel.anchorMax = new Vector2(0f, 0f);
             panel.pivot = new Vector2(0f, 0f);
-            panel.anchoredPosition = new Vector2(20f, 20f);
-            panel.sizeDelta = new Vector2(440f, 122f);
+            panel.anchoredPosition = new Vector2(30f, 30f);
+            panel.sizeDelta = new Vector2(460f, 134f);
 
-            Image panelBg = EnsureImage(panel, new Color(0f, 0f, 0f, 0.30f));
+            Image panelBg = EnsureImage(panel, new Color(0.10f, 0.12f, 0.16f, 0.85f));
             panelBg.raycastTarget = false;
 
-            CreateBar(panel, "HPBar", new Vector2(14f, -16f), new Color(0.50f, 0.06f, 0.10f, 1f), out hpFill, out hpText);
-            CreateBar(panel, "MPBar", new Vector2(14f, -68f), new Color(0.12f, 0.42f, 0.66f, 1f), out mpFill, out mpText);
+            // Modern, punchy colors
+            CreateBar(panel, "HPBar", new Vector2(16f, -18f), new Color(0.92f, 0.22f, 0.22f, 1f), out hpFill, out hpText);
+            CreateBar(panel, "MPBar", new Vector2(16f, -74f), new Color(0.22f, 0.60f, 0.92f, 1f), out mpFill, out mpText);
+        }
+
+        private void BuildFeedbackPanel(RectTransform root)
+        {
+            RectTransform panel = EnsureChildRect(root, "FeedbackPanel");
+            panel.anchorMin = new Vector2(0.5f, 0.65f);
+            panel.anchorMax = new Vector2(0.5f, 0.65f);
+            panel.pivot = new Vector2(0.5f, 0.5f);
+            panel.anchoredPosition = Vector2.zero;
+            panel.sizeDelta = new Vector2(600f, 100f);
+
+            feedbackCanvasGroup = panel.GetComponent<CanvasGroup>();
+            if (feedbackCanvasGroup == null)
+            {
+                feedbackCanvasGroup = panel.gameObject.AddComponent<CanvasGroup>();
+            }
+            feedbackCanvasGroup.alpha = 0f;
+            feedbackCanvasGroup.blocksRaycasts = false;
+            feedbackCanvasGroup.interactable = false;
+
+            feedbackText = EnsureText(panel, "FeedbackText", 48, TextAnchor.MiddleCenter, Color.white);
+            Outline outline = feedbackText.GetComponent<Outline>();
+            if (outline == null)
+            {
+                outline = feedbackText.gameObject.AddComponent<Outline>();
+            }
+            outline.effectColor = new Color(0f, 0f, 0f, 0.8f);
+            outline.effectDistance = new Vector2(2f, -2f);
+
+            RectTransform rect = feedbackText.rectTransform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
         }
 
         private void BuildStatePanel(RectTransform root)
@@ -131,16 +166,16 @@ namespace DuckovProto.UI
             barRoot.anchorMax = new Vector2(0f, 1f);
             barRoot.pivot = new Vector2(0f, 1f);
             barRoot.anchoredPosition = anchoredPosition;
-            barRoot.sizeDelta = new Vector2(412f, 34f);
+            barRoot.sizeDelta = new Vector2(428f, 40f);
 
-            Image bg = EnsureImage(barRoot, new Color(0f, 0f, 0f, 0.55f));
+            Image bg = EnsureImage(barRoot, new Color(0.04f, 0.05f, 0.07f, 0.95f));
             bg.raycastTarget = false;
 
             RectTransform fillRect = EnsureChildRect(barRoot, "Fill");
             fillRect.anchorMin = new Vector2(0f, 0f);
             fillRect.anchorMax = new Vector2(1f, 1f);
-            fillRect.offsetMin = new Vector2(2f, 2f);
-            fillRect.offsetMax = new Vector2(-2f, -2f);
+            fillRect.offsetMin = new Vector2(4f, 4f); // Thicker border
+            fillRect.offsetMax = new Vector2(-4f, -4f);
 
             fill = EnsureImage(fillRect, fillColor);
             fill.type = Image.Type.Filled;
@@ -148,12 +183,17 @@ namespace DuckovProto.UI
             fill.fillAmount = 1f;
             fill.raycastTarget = false;
 
-            label = EnsureText(barRoot, "Label", 17, TextAnchor.MiddleLeft, Color.white);
+            label = EnsureText(barRoot, "Label", 18, TextAnchor.MiddleLeft, Color.white);
+            Outline outline = label.gameObject.GetComponent<Outline>();
+            if (outline == null) outline = label.gameObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0f, 0f, 0f, 0.6f);
+            outline.effectDistance = new Vector2(1f, -1f);
+
             RectTransform labelRect = label.rectTransform;
             labelRect.anchorMin = Vector2.zero;
             labelRect.anchorMax = Vector2.one;
-            labelRect.offsetMin = new Vector2(12f, 0f);
-            labelRect.offsetMax = new Vector2(-12f, 0f);
+            labelRect.offsetMin = new Vector2(14f, 0f);
+            labelRect.offsetMax = new Vector2(-14f, 0f);
         }
 
         private void CreateButton(RectTransform parent, string name, string label, UnityEngine.Events.UnityAction onClick)
