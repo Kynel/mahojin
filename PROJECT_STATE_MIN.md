@@ -54,7 +54,7 @@
 - `Assets/_Project/Scripts/UI/MagicCircleUI.cs`: RMB down 위치 앵커 마법진 UI(원형 테두리+그리드+점선 링+red user line+상태 메시지), 화면 clamp/close 제공
 - magic_circle_user_line_impl: red user line은 UI `Image` 세그먼트 체인 + polyline mesh 병행 렌더(가시성 안정화)
 - magic_circle_visual_tune: 반투명 원형 배경 채움 추가 + border/grid/dot 알파·두께 상향(흐릿함 개선)
-- `Assets/_Project/Scripts/Runes/MagicCircleDrawController.cs`: `RMB Down` 캐스팅 모드+AimLock 시작, `LMB Hold/Drag` 스트로크 수집, `LMB Up` 또는 `RMB Up` 종료/정규화 이벤트 발행, out-of-circle/time/minPoints 규칙 처리
+- `Assets/_Project/Scripts/Runes/MagicCircleDrawController.cs`: `RMB Down` 캐스팅 모드+AimLock 시작, `LMB Hold/Drag` 스트로크 수집, `LMB Up` 또는 `RMB Up` 종료/정규화 이벤트 발행, out-of-circle/time/minPoints 규칙 처리, 성공/실패별 aim-lock clear 플래그 분리 유지
 - legacy_input_removed: `Assets/_Project/Scripts/Input/MagicCircleInputBridge.cs` 삭제(미사용 정리)
 - `Assets/_Project/Scripts/Runes/RuneCastController.cs`: spellId 기반 cast gate(`TryCastSpell(SpellDefinitionSO, CastContext, out failReason)` + rune label overload), global/spell cooldown dictionary, mana gate, HUD state 갱신
 - rune_cast_api: `TryCastSpell(spell, ctx, out failReason)`, `TryCastSpell(spell, ctx, runeDisplayName, out failReason)`, `IsSpellCastAvailable(spell)`, `ReportState(text,duration)`
@@ -95,7 +95,7 @@
 - hud_rune_examples_visibility_fix: guide line/strict line 두께 상향 + 프리뷰 반경 확대 + pipeline 참조 실패 시 `RuneLibrary` fallback 검색
 - hud_rune_preview_source_policy: `useReferenceStrokeComparison=true` 룬은 우측 카드가 `referenceStrokeNorm`을 우선 렌더(번개 가이드 일치), strict 빨간선도 reference strict index 범위 기준으로 표시
 - hud_rune_preview_render_stability: `Rune Examples` 가이드/원형 테두리는 `UiPolylineGraphic` 외에 Image segment chain fallback도 함께 렌더(기기별 라인 미표시 현상 완화)
-- hud_rune_match_text: 카드별 `Match xx% / Need yy% (OK|Fail)` 표시(최근 stroke score 기반)
+- hud_rune_match_text: `ScoreText`는 현재 비활성(표시 안 함), 비활성 시 score 문자열 업데이트 스킵
 - hud_active_layout: bottom-left vitals(HP/MP) + bottom-center state text 유지
 - hud_system_buttons: top-right `재시작`(기본 `Prototype_Arena` 재로드: `restartSceneName/restartScenePath` 사용, 실패 시 현재 씬 fallback), `게임종료`(Editor play stop / build quit)
 - hud_eventsystem_bootstrap: `GameHUD`가 `EventSystem` 자동 보장(`InputSystemUIInputModule` 우선, 없으면 `StandaloneInputModule` fallback)
