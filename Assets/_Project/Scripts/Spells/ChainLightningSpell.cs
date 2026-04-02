@@ -146,7 +146,7 @@ namespace DuckovProto.Spells
 
             for (int i = 0; i < colliders.Length; i++)
             {
-                Health health = colliders[i].GetComponentInParent<Health>();
+                Health health = HealthCache.GetHealth(colliders[i]);
                 if (health == null || excluded.Contains(health))
                 {
                     continue;
@@ -222,7 +222,7 @@ namespace DuckovProto.Spells
                 return;
             }
 
-            Health health = other.GetComponentInParent<Health>();
+            Health health = HealthCache.GetHealth(other);
             if (health == null || owner == null)
             {
                 return;

@@ -27,7 +27,7 @@ namespace DuckovProto.Spells
 
             for (int i = 0; i < hits.Length; i++)
             {
-                Health health = hits[i].GetComponentInParent<Health>();
+                Health health = HealthCache.GetHealth(hits[i]);
                 if (health == null || unique.Contains(health))
                 {
                     continue;
