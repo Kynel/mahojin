@@ -49,7 +49,6 @@ namespace DuckovProto.UI
         [SerializeField] private string restartScenePath = "Assets/_Project/Scenes/Prototype_Arena.unity";
 
         private Canvas canvas;
-        private RectTransform rootRectTransform;
         private RectTransform runeExamplesPanelRect;
         private Image hpFill;
         private Image mpFill;
@@ -216,7 +215,6 @@ namespace DuckovProto.UI
             root.anchorMax = new Vector2(1f, 1f);
             root.offsetMin = Vector2.zero;
             root.offsetMax = Vector2.zero;
-            rootRectTransform = root;
 
             BuildVitalsPanel(root);
             BuildStatePanel(root);
@@ -546,6 +544,7 @@ namespace DuckovProto.UI
             for (int i = 0; i < runeCards.Count; i++)
             {
                 RuneExampleCard card = runeCards[i];
+                bool scoreVisible = card.ScoreText != null && card.ScoreText.gameObject.activeSelf;
                 bool active = i < count && runes[i] != null &&
                     (runes[i].DisplayName == activeRuneName || runes[i].Id == activeRuneId);
                 card.Background.color = active
@@ -554,7 +553,7 @@ namespace DuckovProto.UI
 
                 if (i >= count || runes[i] == null || runeCastPipelineController == null)
                 {
-                    if (card.ScoreText != null)
+                    if (scoreVisible)
                     {
                         card.ScoreText.text = "Match --";
                     }
@@ -566,16 +565,22 @@ namespace DuckovProto.UI
                 if (runeCastPipelineController.TryGetLastRuneScore(rune.Id, out float score, out float pass, out bool recent) && recent)
                 {
                     bool passNow = score >= pass;
-                    card.ScoreText.text = $"Match {Mathf.RoundToInt(score * 100f)}% / Need {Mathf.RoundToInt(pass * 100f)}% {(passNow ? "OK" : "Fail")}";
-                    card.ScoreText.color = passNow
-                        ? new Color(0.7f, 1f, 0.72f, 0.98f)
-                        : new Color(1f, 0.7f, 0.7f, 0.98f);
+                    if (scoreVisible)
+                    {
+                        card.ScoreText.text = $"Match {Mathf.RoundToInt(score * 100f)}% / Need {Mathf.RoundToInt(pass * 100f)}% {(passNow ? "OK" : "Fail")}";
+                        card.ScoreText.color = passNow
+                            ? new Color(0.7f, 1f, 0.72f, 0.98f)
+                            : new Color(1f, 0.7f, 0.7f, 0.98f);
+                    }
                 }
                 else
                 {
-                    float need = GetDisplayPassScore(rune);
-                    card.ScoreText.text = $"Match -- / Need {Mathf.RoundToInt(need * 100f)}%";
-                    card.ScoreText.color = new Color(0.86f, 0.94f, 1f, 0.97f);
+                    if (scoreVisible)
+                    {
+                        float need = GetDisplayPassScore(rune);
+                        card.ScoreText.text = $"Match -- / Need {Mathf.RoundToInt(need * 100f)}%";
+                        card.ScoreText.color = new Color(0.86f, 0.94f, 1f, 0.97f);
+                    }
                 }
             }
         }

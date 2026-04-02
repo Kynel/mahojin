@@ -306,11 +306,11 @@ namespace DuckovProto.Runes
                     StopCoroutine(delayedCloseRoutine);
                 }
 
-                delayedCloseRoutine = StartCoroutine(VisualFeedbackAndCloseRoutine(new Color(0.8f, 0.1f, 0.1f, 1f), 0.25f)); // Flash red for failure
+                delayedCloseRoutine = StartCoroutine(VisualFeedbackAndCloseRoutine(new Color(0.8f, 0.1f, 0.1f, 1f), 0.25f, true)); // Flash red for failure
             }
             else
             {
-                ClearDrawData();
+                ClearDrawData(clearAimLockOnCancelOrFail);
             }
         }
 
@@ -331,15 +331,15 @@ namespace DuckovProto.Runes
                 {
                     StopCoroutine(delayedCloseRoutine);
                 }
-                delayedCloseRoutine = StartCoroutine(VisualFeedbackAndCloseRoutine(new Color(0.1f, 0.8f, 0.3f, 1f), 0.35f)); // Flash green for success
+                delayedCloseRoutine = StartCoroutine(VisualFeedbackAndCloseRoutine(new Color(0.1f, 0.8f, 0.3f, 1f), 0.35f, false)); // Flash green for success
             }
             else
             {
-                ClearDrawData();
+                ClearDrawData(clearAimLockOnSubmit);
             }
         }
 
-        private void ClearDrawData()
+        private void ClearDrawData(bool clearAimLock)
         {
             localStrokePoints.Clear();
             normalizedStrokePoints.Clear();
@@ -355,13 +355,13 @@ namespace DuckovProto.Runes
                 worldSpaceMagicCircle.Hide();
             }
 
-            if (clearAimLockOnSubmit && aimLockController != null)
+            if (clearAimLock && aimLockController != null)
             {
                 aimLockController.ClearLock();
             }
         }
 
-        private IEnumerator VisualFeedbackAndCloseRoutine(Color flashColor, float delay)
+        private IEnumerator VisualFeedbackAndCloseRoutine(Color flashColor, float delay, bool isFailure)
         {
             float elapsed = 0f;
 
@@ -384,12 +384,8 @@ namespace DuckovProto.Runes
             }
 
             delayedCloseRoutine = null;
-            ClearDrawData();
-
-            if (clearAimLockOnCancelOrFail && aimLockController != null && flashColor.r > flashColor.g) // Hacky way to check if it was a failure (red flash)
-            {
-                aimLockController.ClearLock();
-            }
+            bool clearAimLock = isFailure ? clearAimLockOnCancelOrFail : clearAimLockOnSubmit;
+            ClearDrawData(clearAimLock);
         }
     }
 }
